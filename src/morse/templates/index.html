@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 2.2rem;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4da6ff;
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.3);
+        }
+
+        textarea::placeholder {
+            color: #bbbbbb;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4da6ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        button:hover {
+            background-color: #3d8cff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(77, 166, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .clear-btn {
+            background-color: #ff6b6b;
+        }
+
+        .clear-btn:hover {
+            background-color: #ff5252;
+        }
+
+        .output-group {
+            margin-top: 24px;
+        }
+
+        .output {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 8px;
+            min-height: 80px;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #a8e6cf;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .morse-char {
+            margin-right: 8px;
+            letter-spacing: 2px;
+        }
+
+        .copy-btn {
+            display: block;
+            margin: 12px auto 0;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #aaaaaa;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .buttons {
+                flex-direction: column;
+            }
+            button {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Morse Code Converter</h1>
+
+        <div class="input-group">
+            <label for="textInput">Enter Text:</label>
+            <textarea id="textInput" placeholder="Type your message here... (A-Z, 0-9, and basic punctuation supported)"></textarea>
+        </div>
+
+        <div class="buttons">
+            <button id="toMorseBtn">Text → Morse</button>
+            <button id="toTextBtn">Morse → Text</button>
+            <button id="clearBtn" class="clear-btn">Clear All</button>
+        </div>
+
+        <div class="output-group">
+            <label>Result:</label>
+            <div id="output" class="output">Conversion will appear here...</div>
+            <button id="copyBtn" class="copy-btn" style="display: none;">Copy Result</button>
+        </div>
+
+        <div class="footer">
+            <p>Supports letters (A-Z), numbers (0-9), and common punctuation: . , ? ! ' " ( ) & : ; / = + - _ $ @</p>
+        </div>
+    </div>
+
+    <script>
+        // Morse code dictionary
+        const morseCode = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+            'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
+            'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
+            'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+            'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
+            'Z': '--..',
+            '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+            '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+            '.': '.-.-.-', ',': '--..--', '?': '..--..', '!': '-.-.--', "'": '.----.',
+            '"': '.-..-.', '(': '-.--.', ')': '-.--.-', '&': '.-...', ':': '---...',
+            ';': '-.-.-.', '/': '-..-.', '=': '-...-', '+': '.-.-.', '-': '-....-',
+            '_': '..--.-', '$': '...-..-', '@': '.--.-.'
+        };
+
+        // Reverse dictionary for morse to text
+        const textFromMorse = Object.fromEntries(
+            Object.entries(morseCode).map(([key, value]) => [value, key])
+        );
+
+        // DOM elements
+        const textInput = document.getElementById('textInput');
+        const output = document.getElementById('output');
+        const toMorseBtn = document.getElementById('toMorseBtn');
+        const toTextBtn = document.getElementById('toTextBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // Convert text to morse
+        function textToMorse(text) {
+            return text.toUpperCase()
+                .split('')
+                .map(char => {
+                    if (char === ' ') return '/';
+                    return morseCode[char] ? `<span class="morse-char">${morseCode[char]}</span>` : char;
+                })
+                .join(' ');
+        }
+
+        // Convert morse to text
+        function morseToText(morse) {
+            const words = morse.trim().split(' / ');
+            return words.map(word => {
+                const chars = word.split(' ');
+                return chars.map(code => textFromMorse[code] || '?').join('');
+            }).join(' ');
+        }
+
+        // Event listeners
+        toMorseBtn.addEventListener('click', () => {
+            const input = textInput.value.trim();
+            if (!input) {
+                output.innerHTML = '<em style="color:#ff6b6b;">Please enter some text to convert.</em>';
+                copyBtn.style.display = 'none';
+                return;
+            }
+            const result = textToMorse(input);
+            output.innerHTML = result || '<em style="color:#ff6b6b;">No valid characters to convert.</em>';
+            copyBtn.style.display = 'block';
+            copyBtn.textContent = 'Copy Morse Code';
+            copyBtn.onclick = () => copyToClipboard(output.textContent);
+        });
+
+        toTextBtn.addEventListener('click', () => {
+            const input = textInput.value.trim();
+            if (!input) {
+                output.innerHTML = '<em style="color:#ff6b6b;">Please enter morse code to convert.</em>';
+                copyBtn.style.display = 'none';
+                return;
+            }
+
+            // Normalize input: replace multiple spaces with single, handle different separators
+            const normalized = input.replace(/\s+/g, ' ').trim();
+            const result = morseToText(normalized);
+            output.textContent = result || 'Invalid morse code';
+            copyBtn.style.display = 'block';
+            copyBtn.textContent = 'Copy Text';
+            copyBtn.onclick = () => copyToClipboard(output.textContent);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            textInput.value = '';
+            output.textContent = 'Conversion will appear here...';
+            copyBtn.style.display = 'none';
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.backgroundColor = '#51cf66';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.backgroundColor = '';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+
+        // Allow real-time conversion with Ctrl+Enter
+        textInput.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                if (e.shiftKey) {
+                    toTextBtn.click();
+                } else {
+                    toMorseBtn.click();
+                }
+            }
+        });
+
+        // Initial state
+        copyBtn.style.display = 'none';
+    </script>
+</body>
+</html>

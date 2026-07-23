@@ -1,1 +1,58 @@
-.idea
+# ===== Λειτουργικό Σύστημα =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== IDE / Editors =====
+.idea/
+.vscode/
+*.iml
+*.iws
+out/
+.classpath
+.project
+.settings/
+
+# ===== Java =====
+*.class
+*.jar
+*.war
+*.ear
+target/
+build/
+.gradle/
+gradle-app.setting
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+*.sqlite3
+.mypy_cache/
+.pytest_cache/
+
+# ===== Node / Web =====
+node_modules/
+dist/
+build/
+.npm/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== Environment / Secrets =====
+.env
+.env.local
+*.pem
+*.key
+
+# ===== Λοιπά =====
+*.tmp
+*.bak
+*.swp
+logs/

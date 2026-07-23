@@ -1,0 +1,4 @@
+#        Application
+Python==3.13.5
+Flask==3.1.2
+Werkzeug==3.1.3
